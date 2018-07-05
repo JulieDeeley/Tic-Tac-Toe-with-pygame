@@ -50,9 +50,7 @@ def create_grid():
 
 
 def space_is_open(grid, row, column):
-    if grid[row][column] == ' ':  # is the space empty
-        return True
-    return False
+    return grid[row][column] == ' ' # is the space empty
 
 
 def draw_xo_board():  # displays the hash graphic
@@ -65,7 +63,7 @@ def draw_xo_board():  # displays the hash graphic
 
 def draw_symbols(grid):  # draw the xs and os
     for index_y, column in enumerate(grid):  # upper-left co-ords of 3x3 grid
-        for index_x, row in enumerate(grid):
+        for index_x, cell in enumerate(grid):
             if grid[index_y][index_x] == 'X':  # note, yes they are reversed to place graphics!
                 screen.blit(x_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
                                     (index_y * SQUARE)+.5*LINE_WIDTH))
@@ -81,7 +79,7 @@ def draw_intro_buttons():
 
     # below are square buttons to screen, made lighter on mouse over, effect is similar to non commented code
     # pygame.draw.rect(screen, color, (x, y, width, height), line_thickness, 0 for filled) <-comment to remind
-    mouse = pygame.mouse.get_pos()
+    mouse_x, mouse_y = pygame.mouse.get_pos()
     # if 150 + 65 > mouse[0] > 150 and 310 + 65 > mouse[1] > 310:
     #     pygame.draw.rect(screen, LIGHT_BLUE, (150, 310, 65, 65), 0)
     # else:
@@ -93,11 +91,11 @@ def draw_intro_buttons():
     #     pygame.draw.rect(screen, RED, (20, 310, 65, 65), 0)
     # screen.blit(o_img, (150, 310))
     # screen.blit(x_img, (20, 310))
-    if mouse[0] in range(150, 150+65) and mouse[1] in range(310, 310+65):
+    if mouse_x in range(150, 150+65) and mouse_y in range(310, 310+65):
         screen.blit(grey_o_img, (150, 310))
     else:
         screen.blit(o_img, (150, 310))
-    if mouse[0] in range(20, 20+65) and mouse[1] in range(310, 310+65):
+    if mouse_x in range(20, 20+65) and mouse_y in range(310, 310+65):
         screen.blit(grey_x_img, (20, 310))
     else:
         screen.blit(x_img, (20, 310))
@@ -105,8 +103,7 @@ def draw_intro_buttons():
 
 def goes_first():
     players = ['player', 'computer']
-    coin_toss = random.choice(players)
-    return coin_toss
+    return random.choice(players)
 
 
 def draw_who_starts_info(players_symbol, computers_symbol, current_player):
