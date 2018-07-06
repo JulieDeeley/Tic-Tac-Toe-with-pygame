@@ -63,21 +63,13 @@ def draw_xo_board():  # displays the hash graphic
 
 
 def draw_symbols(grid):  # draw the xs and os
-    a_dict = {'X': x_img, 'O': o_img}
+    # a_dict = {'X': x_img, 'O': o_img}
     for index_y, column in enumerate(grid):  # upper-left co-ords of 3x3 grid
         for index_x, cell in enumerate(grid):
             if grid[index_y][index_x] != ' ':
-                screen.blit(a_dict[grid[index_y][index_x]], ((index_x * SQUARE)+(.5*LINE_WIDTH),
-                                                             (index_y * SQUARE)+.5*LINE_WIDTH))
-
-            # if grid[index_y][index_x] == 'X':  # note, yes they are reversed to place graphics!
-            #     screen.blit(x_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
-            #                         (index_y * SQUARE)+.5*LINE_WIDTH))
-            # elif grid[index_y][index_x] == 'O':
-            #     screen.blit(o_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
-            #                         (index_y * SQUARE)+.5*LINE_WIDTH))
-# if cell != ' ':
-# ....screen.blit({'X': x_img, 'O': o_img}[cell],
+                screen.blit({'X': x_img, 'O': o_img}[grid[index_y][index_x]],  # <- shortcut dict code
+                            ((index_x * SQUARE)+(.5*LINE_WIDTH),
+                            (index_y * SQUARE)+.5*LINE_WIDTH))
 
 
 def draw_intro_buttons():
@@ -259,16 +251,6 @@ def draw_end_game_screen(current_player, grid, conclusion, win):
 # ....# Diagonal
 # -----------------------------------------
 
-#
-# def pause():
-#     print('before', pygame.time.get_ticks())
-#     ticks = pygame.time.get_ticks()
-#     wait = True
-#     while wait:
-#         if pygame.time.get_ticks() > ticks + 500:
-#             wait = False
-#             print('during', pygame.time.get_ticks())
-
 
 def main():
     while True:
@@ -285,6 +267,7 @@ def main():
         current_player = coin_toss_winner
         delay = 500  # ms of time
         current_time = pygame.time.get_ticks()
+
         while player_is_not_done:
             # -----Event Handling-----
             for event in pygame.event.get():
@@ -313,7 +296,6 @@ def main():
                             computers_symbol = 'O'
 
             # -----Game Logic-----
-
             if players_symbol in('X', 'O') and game_is_in_play:
                 if current_player == 'player' and row < 3 and space_is_open(grid, row, column):
                     grid[row][column] = players_symbol      # Set that array location to player's move
