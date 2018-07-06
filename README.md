@@ -2,3 +2,4 @@
 A gui version of tic tac toe with pygame
 added faulty timer
 fixing too-far indented code
+fixed timer but it still isn't optimal... needs to be organised better for re-use
