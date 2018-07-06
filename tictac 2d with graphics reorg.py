@@ -9,7 +9,7 @@ import time
 
 # timer
 clock = pygame.time.Clock()
-
+current_time = pygame.time.get_ticks()
 # Set the HEIGHT and WIDTH of the open game window
 SCREEN_WIDTH = 240
 SCREEN_HEIGHT = 440
@@ -73,6 +73,7 @@ def draw_symbols(grid):  # draw the xs and os
                                     (index_y * SQUARE)+.5*LINE_WIDTH))
 # if cell != ' ':
 # ....screen.blit({'X': x_img, 'O': o_img}[cell],
+
 
 def draw_intro_buttons():
     #  display a welcome and prompt for symbol choice
@@ -254,14 +255,14 @@ def draw_end_game_screen(current_player, grid, conclusion, win):
 # -----------------------------------------
 
 
-def pause():
-    print('before', pygame.time.get_ticks())
-    ticks = pygame.time.get_ticks()
-    wait = True
-    while wait:
-        if pygame.time.get_ticks() > ticks + 500:
-            wait = False
-            print('during', pygame.time.get_ticks())
+# def pause():
+#     print('before', pygame.time.get_ticks())
+#     ticks = pygame.time.get_ticks()
+#     wait = True
+#     while wait:
+#         if pygame.time.get_ticks() > ticks + 500:
+#             wait = False
+#             print('during', pygame.time.get_ticks())
 
 
 def main():
@@ -278,13 +279,9 @@ def main():
         computers_symbol = 'X'
         coin_toss_winner = goes_first()
         current_player = coin_toss_winner
-        current_time = pygame.time.get_ticks()
-        delay = 300  # ms of time
-        # end_pause = current_time + delay
-        # print(current_time, end_pause)
+        delay = 300 # ms of time
+
         while player_is_not_done:
-            # end_pause = current_time + delay
-            # print(current_time, end_pause)
             # -----Event Handling-----
             for event in pygame.event.get():
                 if event.type == QUIT or (
@@ -310,37 +307,39 @@ def main():
                         if pos[0] in range(20, 20+65) and pos[1] in range(310, 310+65):
                             players_symbol = 'X'
                             computers_symbol = 'O'
-                        if players_symbol in('X', 'O'):
-                            welcome_is_over = True
+            current_time = pygame.time.get_ticks()
 
-                # -----Game Logic-----
-                if welcome_is_over and game_is_in_play:
-                    if current_player == 'player' and row < 3 and space_is_open(grid, row, column):
-                        grid[row][column] = players_symbol  # Set that array location to player's move
-                        current_time = pygame.time.get_ticks()
-                        win = is_win(grid, players_symbol)  # get the win co-ords so can draw line on win
-                        if win:
-                            conclusion = 'win'
-                            game_is_in_play = False
-                        if is_tie(grid):
-                            conclusion = 'tie'
-                            game_is_in_play = False
-                        if game_is_in_play:
-                            current_player = 'computer'  # if the move was valid, it is comp's turn
+            # -----Game Logic-----
+            if players_symbol in('X', 'O'):
+                welcome_is_over = True
 
-                    if current_player == 'computer':  # note: Do NOT change to elif...
-                        now_time = pygame.time.get_ticks()
-                        if now_time > current_time + delay:
-                            grid = computers_move(grid, computers_symbol, players_symbol)
-                            win = is_win(grid, computers_symbol)
-                            if win:
-                                conclusion = 'win'
-                                game_is_in_play = False
-                            if is_tie(grid):
-                                conclusion = 'tie'
-                                game_is_in_play = False
-                            if game_is_in_play:
-                                current_player = 'player'
+            if welcome_is_over and game_is_in_play:
+                if current_player == 'player' and row < 3 and space_is_open(grid, row, column):
+                    grid[row][column] = players_symbol  # Set that array location to player's move
+                    current_time = pygame.time.get_ticks()
+                    win = is_win(grid, players_symbol)  # get the win co-ords so can draw line on win
+                    if win:
+                        conclusion = 'win'
+                        game_is_in_play = False
+                    if is_tie(grid):
+                        conclusion = 'tie'
+                        game_is_in_play = False
+                    if game_is_in_play:
+                        current_player = 'computer'  # if the move was valid, it is comp's turn
+
+                if current_player == 'computer':  # note: Do NOT change to elif...
+                    now_time = pygame.time.get_ticks()
+                    # if now_time > current_time + delay:
+                    grid = computers_move(grid, computers_symbol, players_symbol)
+                    win = is_win(grid, computers_symbol)
+                    if win:
+                        conclusion = 'win'
+                        game_is_in_play = False
+                    if is_tie(grid):
+                        conclusion = 'tie'
+                        game_is_in_play = False
+                    if game_is_in_play:
+                        current_player = 'player'
 
             # -----Drawing-----
             screen.fill(GREEN)
