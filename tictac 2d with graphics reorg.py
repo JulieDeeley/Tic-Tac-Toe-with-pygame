@@ -3,13 +3,13 @@ from pygame.locals import *  # allows recognition of quit and x to quit
 import random
 import math
 import copy
-import time
-# draft version first pygame July 5 2018
+
+# draft version first pygame July 6 2018
 # very messy experimental version
 
 # timer
 clock = pygame.time.Clock()
-current_time = pygame.time.get_ticks()
+# current_time = pygame.time.get_ticks()
 # Set the HEIGHT and WIDTH of the open game window
 SCREEN_WIDTH = 240
 SCREEN_HEIGHT = 440
@@ -63,14 +63,19 @@ def draw_xo_board():  # displays the hash graphic
 
 
 def draw_symbols(grid):  # draw the xs and os
+    a_dict = {'X': x_img, 'O': o_img}
     for index_y, column in enumerate(grid):  # upper-left co-ords of 3x3 grid
         for index_x, cell in enumerate(grid):
-            if grid[index_y][index_x] == 'X':  # note, yes they are reversed to place graphics!
-                screen.blit(x_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
-                                    (index_y * SQUARE)+.5*LINE_WIDTH))
-            elif grid[index_y][index_x] == 'O':
-                screen.blit(o_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
-                                    (index_y * SQUARE)+.5*LINE_WIDTH))
+            if grid[index_y][index_x] != ' ':
+                screen.blit(a_dict[grid[index_y][index_x]], ((index_x * SQUARE)+(.5*LINE_WIDTH),
+                                                             (index_y * SQUARE)+.5*LINE_WIDTH))
+
+            # if grid[index_y][index_x] == 'X':  # note, yes they are reversed to place graphics!
+            #     screen.blit(x_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
+            #                         (index_y * SQUARE)+.5*LINE_WIDTH))
+            # elif grid[index_y][index_x] == 'O':
+            #     screen.blit(o_img, ((index_x * SQUARE)+(.5*LINE_WIDTH),
+            #                         (index_y * SQUARE)+.5*LINE_WIDTH))
 # if cell != ' ':
 # ....screen.blit({'X': x_img, 'O': o_img}[cell],
 
@@ -83,12 +88,12 @@ def draw_intro_buttons():
     # below are square buttons to screen, made lighter on mouse over, effect is similar to non commented code
     # pygame.draw.rect(screen, color, (x, y, width, height), line_thickness, 0 for filled) <-comment to remind
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    # if 150 + 65 > mouse[0] > 150 and 310 + 65 > mouse[1] > 310:
+    # if 150 + 65 > mouse_x > 150 and 310 + 65 > mouse_y > 310:
     #     pygame.draw.rect(screen, LIGHT_BLUE, (150, 310, 65, 65), 0)
     # else:
     #     pygame.draw.rect(screen, BLUE, (150, 310, 65, 65), 0)
     #
-    # if 20 + 65 > mouse[0] > 20 and 310 + 65 > mouse[1] > 310:
+    # if 20 + 65 > mouse_x > 20 and 310 + 65 > mouse_y > 310:
     #     pygame.draw.rect(screen, LIGHT_RED, (20, 310, 65, 65), 0)
     # else:
     #     pygame.draw.rect(screen, RED, (20, 310, 65, 65), 0)
@@ -254,7 +259,7 @@ def draw_end_game_screen(current_player, grid, conclusion, win):
 # ....# Diagonal
 # -----------------------------------------
 
-
+#
 # def pause():
 #     print('before', pygame.time.get_ticks())
 #     ticks = pygame.time.get_ticks()
@@ -270,7 +275,6 @@ def main():
         # game states
         conclusion = 'none'  # to be used for tied or won
         game_is_in_play = True
-        welcome_is_over = False
         player_is_not_done = True
         win = False
 
@@ -279,8 +283,8 @@ def main():
         computers_symbol = 'X'
         coin_toss_winner = goes_first()
         current_player = coin_toss_winner
-        delay = 300 # ms of time
-
+        delay = 500  # ms of time
+        current_time = pygame.time.get_ticks()
         while player_is_not_done:
             # -----Event Handling-----
             for event in pygame.event.get():
@@ -301,22 +305,19 @@ def main():
                     column = pos[0] // SQUARE  # Change the x/y screen coordinates to grid coordinates
                     row = pos[1] // SQUARE  # note this is mouse_x!! not y
                     # print("Click ", pos, "Grid coordinates: ", row, column)
-                    if not welcome_is_over:
+                    if players_symbol not in('X', 'O'):
                         if pos[0] in range(150, 150+65) and pos[1] in range(310, 310+65):
                             players_symbol = 'O'
                         if pos[0] in range(20, 20+65) and pos[1] in range(310, 310+65):
                             players_symbol = 'X'
                             computers_symbol = 'O'
-            current_time = pygame.time.get_ticks()
 
             # -----Game Logic-----
-            if players_symbol in('X', 'O'):
-                welcome_is_over = True
 
-            if welcome_is_over and game_is_in_play:
+            if players_symbol in('X', 'O') and game_is_in_play:
                 if current_player == 'player' and row < 3 and space_is_open(grid, row, column):
-                    grid[row][column] = players_symbol  # Set that array location to player's move
-                    current_time = pygame.time.get_ticks()
+                    grid[row][column] = players_symbol      # Set that array location to player's move
+                    current_time = pygame.time.get_ticks()  # set the time at player's move
                     win = is_win(grid, players_symbol)  # get the win co-ords so can draw line on win
                     if win:
                         conclusion = 'win'
@@ -329,24 +330,24 @@ def main():
 
                 if current_player == 'computer':  # note: Do NOT change to elif...
                     now_time = pygame.time.get_ticks()
-                    # if now_time > current_time + delay:
-                    grid = computers_move(grid, computers_symbol, players_symbol)
-                    win = is_win(grid, computers_symbol)
-                    if win:
-                        conclusion = 'win'
-                        game_is_in_play = False
-                    if is_tie(grid):
-                        conclusion = 'tie'
-                        game_is_in_play = False
-                    if game_is_in_play:
-                        current_player = 'player'
+                    if now_time > current_time + delay:
+                        grid = computers_move(grid, computers_symbol, players_symbol)
+                        win = is_win(grid, computers_symbol)
+                        if win:
+                            conclusion = 'win'
+                            game_is_in_play = False
+                        if is_tie(grid):
+                            conclusion = 'tie'
+                            game_is_in_play = False
+                        if game_is_in_play:
+                            current_player = 'player'
 
             # -----Drawing-----
             screen.fill(GREEN)
             draw_xo_board()  # display the board hash graphic
 
             if game_is_in_play:
-                if not welcome_is_over:
+                if players_symbol not in('X', 'O'):
                     draw_intro_buttons()
                 else:
                     draw_who_starts_info(players_symbol, computers_symbol, coin_toss_winner)
